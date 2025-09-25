@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Delius&display=swap');
+@import "tailwindcss";
+
+*{
+    font-family: "Delius", cursive;
+}
+
+
+@theme{
+    --color-nav: #212121;
+    --color-CartBg: #0D0D0D;
+    --color-green: #59DE59 ;
+    --color-icon: #97DFF0;
+    --color-blue: #393CED;
+    --color-DarkBlue: #3E40CF;
+}
