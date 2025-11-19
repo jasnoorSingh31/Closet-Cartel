@@ -1,35 +1,15 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 const router = express.Router();
 
-// JWT Secret
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
-
-// Middleware to authenticate token
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-    if (!token) {
-        return res.status(401).json({ 
-            success: false, 
-            message: 'Access token required' 
-        });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Invalid or expired token' 
-            });
-        }
-        req.user = user;
-        next();
-    });
-};
+const getAdminEmails = () =>
+  (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
 
 // Register Route
 router.post('/register', async (req, res) => {
@@ -51,30 +31,32 @@ router.post('/register', async (req, res) => {
             });
         }
 
+        const normalizedEmail = email.trim().toLowerCase();
+
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({ 
                 success: false, 
                 message: 'User already exists with this email' 
             });
         }
+        const adminEmails = getAdminEmails();
+        const role = adminEmails.includes(normalizedEmail) ? 'admin' : 'user';
 
         // Create user (password will be hashed by pre-save middleware)
         const user = new User({
             name,
-            email,
-            password
+            email: normalizedEmail,
+            password,
+            role
         });
 
         await user.save();
 
         // Generate JWT token
-        const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const tokenPayload = { userId: user._id, email: user.email, role: user.role };
+        const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '24h' });
 
         res.status(201).json({
             success: true,
@@ -83,7 +65,8 @@ router.post('/register', async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         });
 
@@ -127,8 +110,10 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        const normalizedEmail = email.trim().toLowerCase();
+
         // Find user
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(400).json({ 
                 success: false, 
@@ -154,11 +139,8 @@ router.post('/login', async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const tokenPayload = { userId: user._id, email: user.email, role: user.role };
+        const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '24h' });
 
         res.json({
             success: true,
@@ -167,7 +149,8 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         });
 

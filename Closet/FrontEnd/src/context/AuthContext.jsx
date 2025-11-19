@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -15,8 +16,6 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const API_URL = 'http://localhost:3001/api';
-
     // Check if user is logged in on app start
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -31,7 +30,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await fetch(`${API_URL}/auth/login`, {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
         try {
-            const response = await fetch(`${API_URL}/auth/register`, {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateProfile = async (name, email) => {
         try {
-            const response = await fetch(`${API_URL}/auth/profile`, {
+            const response = await fetch(`${API_BASE_URL}/auth/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -118,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
     const changePassword = async (currentPassword, newPassword) => {
         try {
-            const response = await fetch(`${API_URL}/auth/change-password`, {
+            const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

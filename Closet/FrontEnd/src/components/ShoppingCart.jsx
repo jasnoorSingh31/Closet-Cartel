@@ -1,83 +1,31 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
+  const { cart, updateQty, removeFromCart } = useCart();
   const [showAddress, setShowAddress] = React.useState(false);
-  const [products, setProducts] = React.useState([
-    {
-      id: 1,
-      name: "Running Shoes",
-      description: [
-        "Lightweight and comfortable",
-        "Breathable mesh upper",
-        "Ideal for jogging and casual wear",
-      ],
-      offerPrice: 250,
-      price: 200,
-      quantity: 1,
-      size: 42,
-      image:
-        "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/card/productImage.png",
-      category: "Footwear",
-      rating: 4,
-    },
-    {
-      id: 2,
-      name: "Running Shoes",
-      description: [
-        "Lightweight and comfortable",
-        "Breathable mesh upper",
-        "Ideal for jogging and casual wear",
-      ],
-      offerPrice: 250,
-      price: 200,
-      quantity: 2,
-      size: 42,
-      image:
-        "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/card/productImage2.png",
-      category: "Footwear",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      description: [
-        "Lightweight and comfortable",
-        "Breathable mesh upper",
-        "Ideal for jogging and casual wear",
-      ],
-      offerPrice: 250,
-      price: 200,
-      quantity: 1,
-      size: 42,
-      image:
-        "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/card/productImage3.png",
-      category: "Footwear",
-      rating: 3,
-    },
-  ]);
 
-  // Calculate totals
-  const totalItems = products.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = products.reduce(
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce(
     (sum, item) => sum + item.offerPrice * item.quantity,
     0
   );
   const tax = subtotal * 0.02;
-  const shippingFee = subtotal > 0 ? 0 : 0; // free shipping for demo
+  const shippingFee = subtotal > 0 ? 0 : 0;
   const totalAmount = subtotal + tax + shippingFee;
 
-  // Handle quantity change
-  const handleQuantityChange = (id, qty) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, quantity: parseInt(qty) } : p))
-    );
+  const handleQuantityChange = (id, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    updateQty(id, quantity);
   };
 
-  // Handle remove
   const handleRemove = (id) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    removeFromCart(id);
   };
 
   return (
@@ -90,156 +38,135 @@ const ShoppingCart = () => {
             <span className="text-sm text-icon">{totalItems} items</span>
           </h1>
 
-          {/* Product Cards using BestSeller styling */}
-          <div className="space-y-4">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="border border-gray-500/20 bg-white p-4 rounded-lg"
+          {cart.length === 0 ? (
+            <div className="border border-gray-500/20 bg-white p-6 rounded-lg text-center text-gray-600">
+              <p>Your cart is empty.</p>
+              <button
+                onClick={() => navigate("/product")}
+                className="mt-4 inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-2 rounded-full cursor-pointer hover:bg-gray-900 transition-colors"
               >
-                <div className="gap-4">
-                  {/* Product Image & Info */}
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="group cursor-pointer flex items-center justify-center">
-                      <img
-                        className="group-hover:scale-105 transition object-contain w-24 h-24 md:w-32 md:h-32"
-                        src={product.image}
-                        alt={product.name}
-                      />
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="text-gray-500/60 text-sm">
-                        <p>{product.category}</p>
-                        <p className="text-gray-700 font-medium text-lg">
-                          {product.name}
-                        </p>
-
-                        {/* Star Rating */}
-                        <div className="flex items-center gap-0.5 mt-1">
-                          {Array(5)
-                            .fill("")
-                            .map((_, i) =>
-                              product.rating > i ? (
-                                <svg
-                                  key={i}
-                                  width="14"
-                                  height="13"
-                                  viewBox="0 0 18 17"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M8.049.927c.3-.921 1.603-.921 1.902 0l1.294 3.983a1 1 0 0 0 .951.69h4.188c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 0 0-.364 1.118l1.295 3.983c.299.921-.756 1.688-1.54 1.118L9.589 13.63a1 1 0 0 0-1.176 0l-3.389 2.46c-.783.57-1.838-.197-1.539-1.118L4.78 10.99a1 1 0 0 0-.363-1.118L1.028 7.41c-.783-.57-.38-1.81.588-1.81h4.188a1 1 0 0 0 .95-.69z"
-                                    fill="#97DFF0"
-                                  />
-                                </svg>
-                              ) : (
-                                <svg
-                                  key={i}
-                                  width="14"
-                                  height="13"
-                                  viewBox="0 0 18 17"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M8.049.927c.3-.921 1.603-.921 1.902 0l1.294 3.983a1 1 0 0 0 .951.69h4.188c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 0 0-.364 1.118l1.295 3.983c.299.921-.756 1.688-1.54 1.118L9.589 13.63a1 1 0 0 0-1.176 0l-3.389 2.46c-.783.57-1.838-.197-1.539-1.118L4.78 10.99a1 1 0 0 0-.363-1.118L1.028 7.41c-.783-.57-.38-1.81.588-1.81h4.188a1 1 0 0 0 .95-.69z"
-                                    fill="#615fff"
-                                    fillOpacity="0.35"
-                                  />
-                                </svg>
-                              )
-                            )}
-                          <p>({product.rating})</p>
-                        </div>
-
-                        {/* Size */}
-                        <p className="mt-2">
-                          Size:{" "}
-                          <span className="font-medium">
-                            {product.size || "N/A"}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Price, Quantity, and Actions */}
-                  <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
-                    {/* Price */}
-                    <div className="text-center md:text-left">
-                      <p className="text-xl font-medium text-green-600">
-                        ${product.offerPrice}{" "}
-                        <span className="text-black text-sm line-through">
-                          ${product.price}
-                        </span>
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Subtotal: $
-                        {(product.offerPrice * product.quantity).toFixed(2)}
-                      </p>
-                    </div>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center justify-center">
-                      <div className="flex items-center gap-2 text-indigo-500">
-                        <div className="flex items-center justify-center gap-2 w-20 h-9 bg-indigo-500/25 rounded select-none">
-                          <button
-                            onClick={() =>
-                              handleQuantityChange(
-                                product.id,
-                                Math.max(1, product.quantity - 1)
-                              )
-                            }
-                            className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 rounded"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-black font-medium">
-                            {product.quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleQuantityChange(
-                                product.id,
-                                product.quantity + 1
-                              )
-                            }
-                            className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 rounded"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => handleRemove(product.id)}
-                      className="cursor-pointer p-2 hover:bg-red-50 rounded"
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="m12.5 7.5-5 5m0-5 5 5m5.833-2.5a8.333 8.333 0 1 1-16.667 0 8.333 8.333 0 0 1 16.667 0"
-                          stroke="#FF532E"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                Browse products
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {cart.map((product) => (
+                <div
+                  key={product.id}
+                  className="border border-gray-500/20 bg-white p-4 rounded-lg"
+                >
+                  <div className="gap-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="group cursor-pointer flex items-center justify-center">
+                        <img
+                          className="group-hover:scale-105 transition object-contain w-24 h-24 md:w-32 md:h-32"
+                          src={product.image}
+                          alt={product.name}
                         />
-                      </svg>
-                    </button>
+                      </div>
+
+                      <div className="flex-1">
+                        <div className="text-gray-500/60 text-sm">
+                          <p>{product.category || "Apparel"}</p>
+                          <p className="text-gray-700 font-medium text-lg">
+                            {product.name}
+                          </p>
+                          {product.description && (
+                            <ul className="list-disc list-inside text-gray-500 text-xs mt-1 space-y-0.5">
+                              {product.description.slice(0, 3).map((line) => (
+                                <li key={line}>{line}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+                      <div className="text-center md:text-left">
+                        <p className="text-xl font-medium text-green-600">
+                          ${product.offerPrice}{" "}
+                          <span className="text-black text-sm line-through">
+                            ${product.price}
+                          </span>
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Subtotal: $
+                          {(product.offerPrice * product.quantity).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-center">
+                    <div className="flex flex-col items-center justify-center text-indigo-500">
+                      <div className="flex items-center justify-center gap-2 w-20 h-9 bg-indigo-500/25 rounded select-none">
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              product.id,
+                              product.quantity - 1
+                            )
+                          }
+                          className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 rounded disabled:opacity-40"
+                          disabled={product.quantity <= 1}
+                        >
+                          -
+                        </button>
+                        <span className="w-5 text-center text-black font-medium">
+                          {product.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              product.id,
+                              product.quantity + 1
+                            )
+                          }
+                          className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 rounded disabled:opacity-40"
+                          disabled={
+                            product.stock !== undefined &&
+                            product.stock !== null &&
+                            product.quantity >= product.stock
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                      {product.stock !== undefined &&
+                        product.stock !== null &&
+                        product.quantity >= product.stock && (
+                          <p className="text-[10px] text-gray-500 mt-1">
+                            Reached stock limit ({product.stock})
+                          </p>
+                        )}
+                    </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleRemove(product.id)}
+                        className="cursor-pointer p-2 hover:bg-red-50 rounded"
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m12.5 7.5-5 5m0-5 5 5m5.833-2.5a8.333 8.333 0 1 1-16.667 0 8.333 8.333 0 0 1 16.667 0"
+                            stroke="#FF532E"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <button
             onClick={() => {
@@ -335,7 +262,10 @@ const ShoppingCart = () => {
             </p>
           </div>
 
-          <button className="w-full py-3 mt-6 cursor-pointer bg-black text-white font-medium hover:bg-black transition">
+          <button
+            className="w-full py-3 mt-6 cursor-pointer bg-black text-white font-medium disabled:opacity-40"
+            disabled={cart.length === 0}
+          >
             Place Order
           </button>
         </div>

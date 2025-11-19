@@ -11,6 +11,7 @@ const Home = () => {
       <div>
         <Navbar />
       </div>
+
       <div>
         <MainBanner />
       </div>
@@ -26,6 +27,7 @@ const Home = () => {
       <div className="mt-15">
         <FooterHome />
       </div>
+
     </div>
   )
 }

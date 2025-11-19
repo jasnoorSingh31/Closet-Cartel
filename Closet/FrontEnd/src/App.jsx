@@ -4,6 +4,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import Products from "./pages/Products";
+import Contact_us from "./components/Contact_us";
+import AdminProducts from "./pages/AdminProducts";
+import RequireAdmin from "./components/RequireAdmin";
 
 const App = () => {
   const location = useLocation();
@@ -15,6 +18,15 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element= {<Cart />} />
           <Route path="/product" element={<Products />} />
+          <Route path="/contact" element={<Contact_us />} />
+          <Route
+            path="/admin/products"
+            element={
+              <RequireAdmin>
+                <AdminProducts />
+              </RequireAdmin>
+            }
+          />
         </Routes>
       </div>
       

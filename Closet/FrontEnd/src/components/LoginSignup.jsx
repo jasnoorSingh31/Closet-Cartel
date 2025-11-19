@@ -55,9 +55,9 @@ const LoginSignup = () => {
             
             {/* Login Form */}
             <div className="relative z-10">           
-                <form onSubmit={handleSubmit} className="flex items-center flex-col gap-4 m-auto p-8 py-12 w-80 sm:w-[352px] text-nav rounded-lg shadow-xl border border-gray-200 bg-white/95 backdrop-blur-sm">
+                <form onSubmit={handleSubmit} className="flex items-center flex-col gap-4 m-auto p-8 py-12 w-80 sm:w-[352px] text-white rounded-lg shadow-xl border border-gray-200 bg-white/95 backdrop-blur-sm">
                     <p className="text-2xl font-medium m-auto">
-                        <span className="text-nav">User</span> {state === "login" ? "Login" : "Sign Up"}
+                        <span className="text-white">User</span> {state === "login" ? "Login" : "Sign Up"}
                     </p>
                     
                     {error && (

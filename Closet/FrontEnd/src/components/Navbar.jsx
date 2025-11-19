@@ -1,4 +1,4 @@
-import { ShoppingCart, User, LogOut } from "lucide-react";
+import { LogOut, ShoppingCart, User } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -7,12 +7,19 @@ const Navbar = () => {
     const navigate = useNavigate();
     const { user, logout, isAuthenticated } = useAuth();
 
-    const navLinks = [
-        { name: "Home", path: "/" },
-        { name: "Products", path: "/product" },
-        { name: "Contact", path: "/contact" },
-        { name: "About", path: "/about" },
-    ];
+    const navLinks = React.useMemo(() => {
+        const links = [
+            { name: "Home", path: "/" },
+            { name: "Products", path: "/product" },
+            { name: "Contact", path: "/contact" },
+        ];
+
+        if (user?.role === "admin") {
+            links.push({ name: "Admin", path: "/admin/products" });
+        }
+
+        return links;
+    }, [user]);
 
     const [isScrolled, setIsScrolled] = React.useState(false);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
