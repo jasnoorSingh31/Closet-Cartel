@@ -4,6 +4,7 @@ const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Normalize incoming description data so we can accept either a string or array.
 const normalizeDescription = (description) => {
   if (!description) return [];
   if (Array.isArray(description)) {
@@ -93,14 +94,18 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
       isActive,
     } = req.body;
 
-    if (!name || !image || price === undefined || offerPrice === undefined) {
+    if (!name || !image || price === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Name, image URL, price and offer price are required',
+        message: 'Name, image URL, and price are required',
       });
     }
 
-    if (Number(offerPrice) > Number(price)) {
+    if (
+      offerPrice !== undefined &&
+      offerPrice !== null &&
+      Number(offerPrice) > Number(price)
+    ) {
       return res.status(400).json({
         success: false,
         message: 'Offer price cannot exceed original price',
@@ -143,11 +148,10 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
       updates.description = normalizeDescription(updates.description);
     }
 
-    if (
-      updates.offerPrice !== undefined &&
-      updates.price !== undefined &&
-      Number(updates.offerPrice) > Number(updates.price)
-    ) {
+    const hasOffer = updates.offerPrice !== undefined && updates.offerPrice !== null;
+    const hasPrice = updates.price !== undefined && updates.price !== null;
+
+    if (hasOffer && hasPrice && Number(updates.offerPrice) > Number(updates.price)) {
       return res.status(400).json({
         success: false,
         message: 'Offer price cannot exceed original price',

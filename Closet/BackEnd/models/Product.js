@@ -28,7 +28,6 @@ const productSchema = new mongoose.Schema(
     },
     offerPrice: {
       type: Number,
-      required: [true, 'Offer price is required'],
       min: [0, 'Offer price cannot be negative'],
     },
     stock: {

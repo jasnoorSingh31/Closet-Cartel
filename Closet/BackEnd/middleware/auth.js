@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET =
   process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
+// Validates JWTs attached as "Authorization: Bearer <token>".
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
@@ -27,6 +28,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// Guard to ensure the requester has an admin role (set during login/register).
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({

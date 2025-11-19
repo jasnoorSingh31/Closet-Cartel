@@ -17,6 +17,9 @@ const Navbar = () => {
         if (user?.role === "admin") {
             links.push({ name: "Admin", path: "/admin/products" });
         }
+        if (user) {
+            links.push({ name: "My Orders", path: "/orders" });
+        }
 
         return links;
     }, [user]);
@@ -151,6 +154,16 @@ const Navbar = () => {
                                                 className="w-full text-left px-4 py-2 hover:bg-gray-100"
                                             >
                                                 Profile
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
+                                                onClick={() =>
+                                                    navigate("/orders")
+                                                }
+                                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                            >
+                                                My Orders
                                             </button>
                                         </li>
                                         <li>

@@ -27,7 +27,7 @@ export const CartProvider = ({ children }) => {
     } catch {}
   }, [cart]);
 
-  // Add product (if exists increment quantity, else push with quantity=1)
+  // Add product (or bump quantity) while respecting per-size stock limits.
   const addToCart = (product) => {
     setCart((prev) => {
       const existing = prev.find((p) => p.id === product.id);
@@ -41,13 +41,18 @@ export const CartProvider = ({ children }) => {
         }
         return prev.map((p) =>
           p.id === product.id
-            ? { ...p, quantity: Math.min(stock, p.quantity + 1) }
+            ? {
+                ...p,
+                quantity: Math.min(stock, p.quantity + 1),
+                productId: product.productId || p.productId || product.id,
+                selectedSize: product.selectedSize || p.selectedSize,
+              }
             : p
         );
       }
 
       if (stock <= 0) return prev;
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1, productId: product.productId || product.id }];
     });
   };
 
@@ -63,7 +68,11 @@ export const CartProvider = ({ children }) => {
             stock === Number.POSITIVE_INFINITY
               ? quantity
               : Math.min(quantity, stock);
-          return { ...p, quantity: nextQty };
+          return {
+            ...p,
+            quantity: nextQty,
+            productId: p.productId || p.id,
+          };
         })
         .filter(Boolean);
     });
@@ -74,8 +83,14 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQty, removeFromCart }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, updateQty, removeFromCart, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );

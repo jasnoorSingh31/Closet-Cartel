@@ -18,6 +18,7 @@ const initialFormState = {
 };
 
 const AdminProducts = () => {
+  // Product provider gives storefront list + helpers, token gates admin routes.
   const { refreshProducts, fetchAdminProducts } = useProducts();
   const { token } = useAuth();
   const [adminProducts, setAdminProducts] = useState([]);
@@ -36,6 +37,7 @@ const AdminProducts = () => {
     return formData.description;
   }, [formData.description]);
 
+  // Pull the full catalog (including hidden items) so the table is in sync.
   const loadAdminProducts = async () => {
     if (!token) return;
     try {
@@ -83,6 +85,7 @@ const AdminProducts = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Handles both create and update flows based on the presence of editingId.
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!token) return;
@@ -197,7 +200,7 @@ const AdminProducts = () => {
           <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
             <label className="text-sm font-medium">
               Name
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Internal + customer-facing title (e.g., “Jet Black Tee”)
               </span>
               <input
@@ -210,7 +213,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Category
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Collection or segment (Essentials, Athletics, etc.)
               </span>
               <input
@@ -222,7 +225,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Image URL
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Public link to the product photo (png/jpg/webp)
               </span>
               <input
@@ -235,7 +238,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Size
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Default size or size run note (e.g., “M” or “One size”)
               </span>
               <input
@@ -247,7 +250,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Price
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Original MSRP shown as strikethrough (numbers only)
               </span>
               <input
@@ -262,7 +265,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Offer price
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Discounted price customers pay (must be ≤ Price)
               </span>
               <input
@@ -272,12 +275,11 @@ const AdminProducts = () => {
                 value={formData.offerPrice}
                 onChange={handleChange}
                 className="mt-1 w-full rounded border border-gray-200 bg-white/10 text-white placeholder-white/60 px-3 py-2 focus:border-white focus:outline-none"
-                required
               />
             </label>
             <label className="text-sm font-medium">
               Stock
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Available inventory count (used for internal tracking)
               </span>
               <input
@@ -290,7 +292,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium">
               Rating
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Average customer rating (0 – 5, supports decimals)
               </span>
               <input
@@ -304,7 +306,7 @@ const AdminProducts = () => {
             </label>
             <label className="text-sm font-medium md:col-span-2">
               Description (one bullet per line)
-              <span className="block text-xs text-gray-500 font-normal">
+              <span className="block text-xs text-white font-normal">
                 Short selling points; each line becomes a bullet on PDP/cart
               </span>
               <textarea
@@ -349,19 +351,19 @@ const AdminProducts = () => {
         <section className="bg-white text-gray-900 rounded-2xl shadow p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Inventory</h2>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-white">
               {adminProducts.length} product(s)
             </span>
           </div>
           {loading ? (
-            <p className="text-gray-500">Loading products…</p>
+            <p className="text-white">Loading products…</p>
           ) : adminProducts.length === 0 ? (
-            <p className="text-gray-500">No products yet. Add one above.</p>
+            <p className="text-white">No products yet. Add one above.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-500">
+                  <tr className="text-left text-white">
                     <th className="py-2 pr-4 font-medium">Name</th>
                     <th className="py-2 pr-4 font-medium">Category</th>
                     <th className="py-2 pr-4 font-medium">Price</th>
@@ -380,7 +382,7 @@ const AdminProducts = () => {
                         <p className="font-medium text-gray-900">
                           {product.name}
                         </p>
-                        <p className="text-xs text-gray-500 truncate max-w-xs">
+                        <p className="text-xs text-white truncate max-w-xs">
                           {product.image}
                         </p>
                       </td>
@@ -389,7 +391,7 @@ const AdminProducts = () => {
                         <span className="font-semibold">
                           ${product.offerPrice.toFixed(2)}
                         </span>{" "}
-                        <span className="text-xs text-gray-500 line-through">
+                        <span className="text-xs text-white line-through">
                           ${product.price.toFixed(2)}
                         </span>
                       </td>

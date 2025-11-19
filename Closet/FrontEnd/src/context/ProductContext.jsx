@@ -16,6 +16,7 @@ export const ProductProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Public storefront fetch used by the entire app.
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -44,6 +45,7 @@ export const ProductProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
+  // Authenticated fetch that returns hidden/unpublished items too.
   const fetchAdminProducts = async (token) => {
     try {
       const response = await fetch(`${API_BASE_URL}/products/admin`, {

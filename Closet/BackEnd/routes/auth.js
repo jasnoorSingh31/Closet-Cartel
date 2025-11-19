@@ -5,6 +5,7 @@ const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Keep a small helper so we only have to trim/lowercase the ADMIN_EMAILS list once.
 const getAdminEmails = () =>
   (process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -31,6 +32,7 @@ router.post('/register', async (req, res) => {
             });
         }
 
+        // We compare emails in lowercase to avoid duplicate accounts with different casing.
         const normalizedEmail = email.trim().toLowerCase();
 
         // Check if user already exists

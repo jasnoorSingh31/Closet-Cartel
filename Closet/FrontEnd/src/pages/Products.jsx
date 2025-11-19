@@ -6,16 +6,30 @@ import { useCart } from "../context/CartContext";
 // adjust path if your file is in another folder:
 import { useProducts } from "../context/ProductContext";
 
+// Shared size options so cards and any future components stay in sync.
+const sizeOptions = ["XS", "S", "M", "L", "XL"];
+
 const Products = () => {
   const navigate = useNavigate();
   const { cart, addToCart, updateQty } = useCart();
   const { products, loading, error } = useProducts();
+  const [selectedSizes, setSelectedSizes] = React.useState({});
 
-  // helper to get current quantity for a product
   const getQty = (id) => {
     const item = cart.find((c) => c.id === id);
     return item ? item.quantity : 0;
   };
+
+  const getSelectedSize = (productId, fallbackSize = "M") => {
+    return selectedSizes[productId] || fallbackSize || "M";
+  };
+
+  const handleSizeSelect = (productId, size) => {
+    setSelectedSizes((prev) => ({ ...prev, [productId]: size }));
+  };
+
+  // Compose an identifier so different sizes of the same product coexist in cart state.
+  const makeCartKey = (productId, size) => `${productId}-${size}`;
 
   return (
     <div>
@@ -40,9 +54,17 @@ const Products = () => {
                 typeof product.rating === "number"
                   ? product.rating.toFixed(1)
                   : product.rating || "0.0";
+              const displayPrice = Number(product.offerPrice ?? product.price ?? 0);
+              const hasDiscount =
+                product.offerPrice !== undefined &&
+                product.offerPrice !== null &&
+                product.price !== undefined;
               const stock = Number(product.stock ?? 0);
-              const currentQty = getQty(productId);
+              const selectedSize = getSelectedSize(productId, product.size);
+              const cartKey = makeCartKey(productId, selectedSize);
+              const currentQty = getQty(cartKey);
               const soldOut = stock <= 0;
+              const lowStock = stock > 0 && stock < 15;
               const reachedMax = currentQty >= stock && stock > 0;
               return (
                 <div
@@ -60,15 +82,21 @@ const Products = () => {
                   <div className="text-gray-500/60 text-sm mt-2">
                     <p>{product.category}</p>
                     <p className="text-gray-700 font-medium text-lg truncate w-full">{product.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {soldOut
-                        ? "Out of stock"
-                        : `${stock} in stock${
-                            currentQty
-                              ? ` · ${Math.max(stock - currentQty, 0)} left`
-                              : ""
-                          }`}
-                    </p>
+                    {/* Only warn users when stock is scarce or gone */}
+                    {(soldOut || lowStock) && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {soldOut
+                          ? "Out of stock"
+                          : `${stock} in stock${
+                              currentQty
+                                ? ` · ${Math.max(
+                                    stock - currentQty,
+                                    0
+                                  )} left for ${selectedSize}`
+                                : ""
+                            }`}
+                      </p>
+                    )}
 
                     <div className="flex items-center gap-0.5 mt-1">
                       {Array(5).fill("").map((_, i) =>
@@ -85,12 +113,34 @@ const Products = () => {
                       <p className="ml-1">({displayRating})</p>
                     </div>
 
+                    {/* Size selector */}
+                    <div className="mt-3">
+                      <p className="text-xs text-gray-500 mb-1">Size</p>
+                      <div className="flex flex-wrap gap-1">
+                        {sizeOptions.map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => handleSizeSelect(productId, size)}
+                            className={`px-2 py-1 text-xs rounded border transition-colors ${
+                              selectedSize === size
+                                ? "bg-black text-white border-black"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-black"
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="flex items-end justify-between mt-3">
                       <p className="md:text-xl text-base font-medium text-green-600">
-                        ${product.offerPrice}{" "}
-                        <span className="text-black md:text-sm text-xs line-through">
-                          ${product.price}
-                        </span>
+                        ${displayPrice.toFixed(2)}{" "}
+                        {hasDiscount && (
+                          <span className="text-black md:text-sm text-xs line-through">
+                            ${Number(product.price).toFixed(2)}
+                          </span>
+                        )}
                       </p>
 
                       <div className="text-nav">
@@ -102,7 +152,14 @@ const Products = () => {
                                 : "bg-white border-nav hover:bg-icon cursor-pointer"
                             }`}
                             disabled={soldOut}
-                            onClick={() => addToCart({ ...product, id: productId })}
+                            onClick={() =>
+                              addToCart({
+                                ...product,
+                                id: cartKey,
+                                productId,
+                                selectedSize,
+                              })
+                            }
                           >
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#212121" strokeLinecap="round" strokeLinejoin="round" />
@@ -113,7 +170,9 @@ const Products = () => {
                         ) : (
                           <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-indigo-500/25 rounded select-none">
                             <button
-                              onClick={() => updateQty(productId, Math.max(0, currentQty - 1))}
+                              onClick={() =>
+                                updateQty(cartKey, Math.max(0, currentQty - 1))
+                              }
                               className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 transition-colors disabled:opacity-40"
                               disabled={currentQty <= 0}
                             >
@@ -121,7 +180,7 @@ const Products = () => {
                             </button>
                             <span className="w-5 text-center font-medium">{currentQty}</span>
                             <button
-                              onClick={() => updateQty(productId, currentQty + 1)}
+                              onClick={() => updateQty(cartKey, currentQty + 1)}
                               className="cursor-pointer text-md px-2 h-full hover:bg-indigo-500/10 transition-colors disabled:opacity-40"
                               disabled={reachedMax}
                             >
@@ -148,18 +207,34 @@ const Products = () => {
             <div className="mt-8 bg-white p-6 rounded-lg shadow-lg border">
               <h3 className="text-lg font-semibold mb-4">Cart Summary</h3>
               <div className="space-y-2">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center">
-                    <span className="text-sm">{item.name} x {item.quantity}</span>
-                    <span className="font-medium">${(item.offerPrice * item.quantity).toFixed(2)}</span>
-                  </div>
-                ))}
+                {cart.map((item) => {
+                  const itemPrice = Number(item.offerPrice ?? item.price ?? 0);
+                  return (
+                    <div key={item.id} className="flex justify-between items-center">
+                      <span className="text-sm">
+                        {item.name} ({item.selectedSize || item.size || "N/A"}) x{" "}
+                        {item.quantity}
+                      </span>
+                      <span className="font-medium">
+                        ${(itemPrice * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                })}
 
                 <div className="border-t pt-2 mt-2">
                   <div className="flex justify-between items-center font-bold">
                     <span>Total:</span>
                     <span className="text-lg text-green-600">
-                      ${cart.reduce((total, item) => total + item.offerPrice * item.quantity, 0).toFixed(2)}
+                      ${cart
+                        .reduce(
+                          (total, item) =>
+                            total +
+                            Number(item.offerPrice ?? item.price ?? 0) *
+                              item.quantity,
+                          0
+                        )
+                        .toFixed(2)}
                     </span>
 
                     <div className="flex justify-between items-center font-bold">

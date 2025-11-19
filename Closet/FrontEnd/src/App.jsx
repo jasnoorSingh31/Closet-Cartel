@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import Products from "./pages/Products";
 import Contact_us from "./components/Contact_us";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import MyOrders from "./pages/MyOrders";
 import AdminProducts from "./pages/AdminProducts";
 import RequireAdmin from "./components/RequireAdmin";
 
@@ -19,9 +21,12 @@ const App = () => {
           <Route path="/cart" element= {<Cart />} />
           <Route path="/product" element={<Products />} />
           <Route path="/contact" element={<Contact_us />} />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          <Route path="/orders" element={<MyOrders />} />
           <Route
             path="/admin/products"
             element={
+              // RequireAdmin ensures only privileged accounts reach the dashboard.
               <RequireAdmin>
                 <AdminProducts />
               </RequireAdmin>
