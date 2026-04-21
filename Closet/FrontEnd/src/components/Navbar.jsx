@@ -109,7 +109,7 @@ const Navbar = () => {
 
                 {/* Desktop Right */}
                 <div className="hidden md:flex items-center gap-4 relative">
-                    <svg
+                    {/* <svg
                         className={`h-6 w-6 text-white hover:text-icon transition-all cursor-pointer duration-300 ${
                             isScrolled ? "invert" : ""
                         }`}
@@ -125,7 +125,7 @@ const Navbar = () => {
                             x2="16.65"
                             y2="16.65"
                         />
-                    </svg>
+                    </svg> */}
 
                     {isAuthenticated ? (
                         <div className="relative">
@@ -146,7 +146,7 @@ const Navbar = () => {
                             {isDropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-20">
                                     <ul className="py-2 text-gray-700">
-                                        <li>
+                                        {/* <li>
                                             <button
                                                 onClick={() =>
                                                     navigate("/profile")
@@ -155,7 +155,7 @@ const Navbar = () => {
                                             >
                                                 Profile
                                             </button>
-                                        </li>
+                                        </li> */}
                                         <li>
                                             <button
                                                 onClick={() =>
@@ -166,7 +166,7 @@ const Navbar = () => {
                                                 My Orders
                                             </button>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <button
                                                 onClick={() =>
                                                     navigate("/settings")
@@ -175,7 +175,7 @@ const Navbar = () => {
                                             >
                                                 Settings
                                             </button>
-                                        </li>
+                                        </li> */}
                                         <li>
                                             <button
                                                 onClick={handleLogout}
