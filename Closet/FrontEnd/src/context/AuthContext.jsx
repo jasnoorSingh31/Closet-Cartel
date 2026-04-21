@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { API_BASE_URL } from '../utils/constants';
+
+// ✅ Use environment variable (recommended)
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://closet-cartel.onrender.com/api";
 
 const AuthContext = createContext();
 
@@ -16,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check if user is logged in on app start
+    // ✅ Load user from localStorage
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+    // ================= LOGIN =================
     const login = async (email, password) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -55,6 +58,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // ================= REGISTER =================
     const register = async (name, email, password) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -82,6 +86,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // ================= LOGOUT =================
     const logout = () => {
         setToken(null);
         setUser(null);
@@ -89,6 +94,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
     };
 
+    // ================= UPDATE PROFILE =================
     const updateProfile = async (name, email) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/profile`, {
@@ -115,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // ================= CHANGE PASSWORD =================
     const changePassword = async (currentPassword, newPassword) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
@@ -152,5 +159,3 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
-
