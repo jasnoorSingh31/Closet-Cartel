@@ -323,7 +323,7 @@ const AdminProducts = () => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleChange}
-                className="h-4 w-4 rounded border border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border border-gray-300 text-amber-50 focus:ring-indigo-500"
               />
               Visible on storefront
             </label>
