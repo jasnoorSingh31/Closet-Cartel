@@ -19,7 +19,6 @@ app.use(express.json());
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',
     process.env.FRONTEND_URL
   ],
   credentials: true
@@ -35,12 +34,7 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running!' });
 });
 
-// ===== SERVE FRONTEND =====
-app.use(express.static(path.join(__dirname, '../FrontEnd/dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../FrontEnd/dist/index.html'));
-});
 
 // ===== ERROR HANDLER =====
 app.use((err, req, res, next) => {

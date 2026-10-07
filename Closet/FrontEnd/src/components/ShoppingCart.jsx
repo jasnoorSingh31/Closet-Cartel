@@ -299,12 +299,12 @@ const ShoppingCart = () => {
               {savedAddress ? (
                 <div className="bg-white border border-gray-300 p-3 rounded text-sm">
                   <p className="font-medium text-gray-800">{savedAddress.fullName}</p>
-                  <p className="text-gray-600">{savedAddress.phone}</p>
-                  <p className="text-gray-600 mt-1">{savedAddress.street}</p>
-                  <p className="text-gray-600">
+                  <p className="text-white">{savedAddress.phone}</p>
+                  <p className="text-white mt-1">{savedAddress.street}</p>
+                  <p className="text-white">
                     {savedAddress.city}, {savedAddress.state} {savedAddress.zipCode}
                   </p>
-                  <p className="text-gray-600">{savedAddress.country}</p>
+                  <p className="text-white">{savedAddress.country}</p>
                   <button
                     onClick={() => setShowAddressModal(true)}
                     className="text-icon hover:underline cursor-pointer mt-2 text-xs"
@@ -395,7 +395,7 @@ const ShoppingCart = () => {
 
             <form onSubmit={handleAddressSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Full Name *
                 </label>
                 <input
@@ -409,7 +409,7 @@ const ShoppingCart = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Phone Number *
                 </label>
                 <input
@@ -423,7 +423,7 @@ const ShoppingCart = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Street Address *
                 </label>
                 <input
@@ -438,7 +438,7 @@ const ShoppingCart = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     City *
                   </label>
                   <input
@@ -452,7 +452,7 @@ const ShoppingCart = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     State *
                   </label>
                   <input
@@ -468,7 +468,7 @@ const ShoppingCart = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     ZIP Code *
                   </label>
                   <input
@@ -482,7 +482,7 @@ const ShoppingCart = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Country *
                   </label>
                   <input
@@ -500,13 +500,13 @@ const ShoppingCart = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="flex-1 px-6 py-3 text-base border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-6 py-3 text-base border border-gray-300 rounded-xl bg-gray-50 hover:cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 text-base bg-black text-white rounded hover:bg-gray-900 transition-colors"
+                  className="flex-1 px-6 py-3 text-base bg-CartBg text-white rounded-xl hover:bg-CartBg transition-colors"
                 >
                   Save Address
                 </button>

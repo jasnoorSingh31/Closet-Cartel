@@ -323,7 +323,7 @@ const AdminProducts = () => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleChange}
-                className="h-4 w-4 rounded border border-gray-300 text-amber-50 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border border-gray-300 text-amber-50 focus:white"
               />
               Visible on storefront
             </label>
@@ -332,7 +332,7 @@ const AdminProducts = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100"
+                className="px-4 py-2 rounded-full border border-gray-300 text-white hover:bg-gray-100"
                 disabled={submitting}
               >
                 Reset

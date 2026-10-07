@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // ✅ Use environment variable (recommended)
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://closet-cartel.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const AuthContext = createContext();
-
+console.log("API URL:", API_BASE_URL);
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
